@@ -27,7 +27,8 @@ export default class UserCrud extends Component {
     this.setState({ user: initializeState.user })
   }
 
-  save() {
+  save(e) {
+    e.preventDefault();
     const user = this.state.user
     const method = user.id ? 'put' : 'post'
     const url = user.id ? `${baseUrl}/${user.id}` : baseUrl
@@ -52,7 +53,7 @@ export default class UserCrud extends Component {
 
   renderForm() {
     return(
-      <div className="form">
+      <form className="form" onSubmit={e => this.save(e)}>
         <div className="row">
           <div className="col-12 col-md-6">
             <div className="form-group">
@@ -78,7 +79,7 @@ export default class UserCrud extends Component {
         <hr/>
         <div className="row">
           <div className="col-12 d-flex justify-content-end">
-            <button className="btn btn-primary" onClick={e => this.save(e)}>
+            <button type="submit" className="btn btn-primary">
               Salvar
             </button>
 
@@ -87,7 +88,7 @@ export default class UserCrud extends Component {
             </button>
           </div>
         </div>
-      </div>
+      </form>
     )
   }
 
