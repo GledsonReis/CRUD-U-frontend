@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
-import axios from 'axios'
+import React, { useEffect } from 'react';
 import Main from '../template/Main'
+import { useStoreActions, useStoreState } from 'easy-peasy'
 
 const headerProps = {
   icon: 'users',
@@ -8,52 +8,20 @@ const headerProps = {
   subtitle: 'CRUD de usuários'
 }
 
-const baseUrl = "http://localhost:3001/users"
+export default function UserCrud({ id }) {
+  const users = useStoreState(state => state.users.list);
+  const getAllUsers = useStoreActions(actions => actions.users.getAllUsers);
+  // const user = useStoreState(state => state.users.user);
+  // const add = useStoreActions(actions => actions.users.add);
 
-const initializeState = {
-  user: { name: '', email: ''},
-  list: []
-}
-export default class UserCrud extends Component {
-  state = { ...initializeState };
+  useEffect(()=>{
+    getAllUsers();
+    // eslint-disable-next-line
+  }, [])
 
-  UNSAFE_componentWillMount(){
-    axios(baseUrl).then(resp => {
-      this.setState({ list: resp.data })
-    })
-  }
-
-  clear() {
-    this.setState({ user: initializeState.user })
-  }
-
-  save(e) {
-    e.preventDefault();
-    const user = this.state.user
-    const method = user.id ? 'put' : 'post'
-    const url = user.id ? `${baseUrl}/${user.id}` : baseUrl
-    axios[method](url, user)
-      .then(resp => {
-        const list = this.getUpdatedList(resp.data, true)
-        this.setState({ user: initializeState.user, list })
-      })
-  }
-
-  getUpdatedList(user, add) {
-    const list = this.state.list.filter(u => u.id !== user.id)
-    if (add) list.unshift(user)
-    return list
-  }
-
-  updateFields(event) {
-    const user = { ...this.state.user}
-    user[event.target.name] = event.target.value
-    this.setState({ user })
-  }
-
-  renderForm() {
-    return(
-      <form className="form" onSubmit={e => this.save(e)}>
+  return (
+    <Main { ...headerProps}>
+      {/* <form className="form" onSubmit={onAddUser}>
         <div className="row">
           <div className="col-12 col-md-6">
             <div className="form-group">
@@ -88,23 +56,8 @@ export default class UserCrud extends Component {
             </button>
           </div>
         </div>
-      </form>
-    )
-  }
-
-  load(user){
-    this.setState({ user })
-  }
-
-  remove(user){
-    axios.delete(`${baseUrl}/${user.id}`).then(resp => {
-      const list = this.getUpdatedList(user, false);
-      this.setState({ list })
-    })
-  }
-
-  renderTable() {
-    return(
+      </form> */}
+      <p>Usuários cadastrados: {users.length}</p>
       <table className="table mt-4">
         <thead>
           <tr> 
@@ -115,39 +68,23 @@ export default class UserCrud extends Component {
           </tr>
         </thead>
         <tbody>
-          {this.renderRow()}
+          {users.map(user => (
+            <tr key={user.id}>
+              <td>{user.id}</td>
+              <td>{user.name}</td>
+              <td>{user.email}</td>
+              <td>
+                <button className="btn btn-warnig" >
+                  <i className="fa fa-pencil"></i>
+                </button>
+                <button className="btn btn-danger ml-2">
+                  <i className="fa fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
-    )
-  }
-
-  renderRow() {
-    return this.state.list.map(user => {
-      return(
-        <tr key={user.id}>
-          <td>{user.id}</td>
-          <td>{user.name}</td>
-          <td>{user.email}</td>
-          <td>
-            <button className="btn btn-warnig" onClick={() => this.load(user)}>
-              <i className="fa fa-pencil"></i>
-            </button>
-            <button className="btn btn-danger ml-2" onClick={() => this.remove(user)}>
-              <i className="fa fa-trash"></i>
-            </button>
-          </td>
-        </tr>
-      )
-    })
-  }
-
-  render() {
-    return (
-      <Main { ...headerProps}>
-        {this.renderForm()}
-        <p>Usuários cadastrados: {this.state.list.length}</p>
-        {this.renderTable()}
-      </Main>
-    )
-  }
+    </Main>
+  )
 }
