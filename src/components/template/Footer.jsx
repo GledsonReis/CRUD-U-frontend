@@ -2,8 +2,8 @@ import "./Footer.css"
 import React from 'react'
 
 export default props =>
-  <footer className="footer">
+  <footer className="footer p-3">
     <span>
-      Desevoldor de peixes, programando atipicamente.
+      Desenvolvedor de peixes, programando atipicamente.
     </span>
   </footer>

@@ -1,9 +1,11 @@
 :root {
   --bg-dark: #1a2f3a;
   --logo-height: 100px;
+  --logo-height-mobile: 130px;
   --header-height: 100px;
+  --menu-top-height: auto;
   --aside-width: 225px;
-  --footer-height: 40px;
+  --footer-height: auto;
 
   --shadow:
     0 2px 23px 0 rgba(0, 0, 0, 0.1),
@@ -51,3 +53,38 @@ footer.footer {
   grid-area: footer;
 }
 
+@media(max-width: 768px){
+  .app {
+    grid-template-rows:
+      var(--header-height)
+      var(--menu-top-height)
+      1fr
+      var(--footer-height);
+    grid-template-columns: var(--aside-width) 1fr;
+    grid-template-areas: 
+      "logo header"
+      "menu menu"
+      "content content"
+      "footer footer";
+  }
+}
+
+@media(max-width: 576px){
+  .app {
+    grid-template-rows: 
+      var(--logo-height-mobile)
+      var(--menu-top-height)
+      1fr
+      var(--footer-height);
+    grid-template-columns: auto;
+    grid-template-areas: 
+      "logo"
+      "menu"
+      "content"
+      "footer";
+  }
+
+  header.header {
+    display: none!important;
+  }
+}
