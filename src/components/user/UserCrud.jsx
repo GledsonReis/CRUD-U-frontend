@@ -10,11 +10,12 @@ const headerProps = {
 
 export default function UserCrud({ id }) {
   const users = useStoreState(state => state.users.list);
-  const getAllUsers = useStoreActions(actions => actions.users.getAllUsers);
   const user = useStoreState(state => state.users.user);
-  const add = useStoreActions(actions => actions.users.createUser);
+  const getAllUsers = useStoreActions(actions => actions.users.getAllUsers);
   const updateFields = useStoreActions(actions => actions.users.updadeValue);
+  const add = useStoreActions(actions => actions.users.createUser);
   const remove = useStoreActions(actions => actions.users.removeUser);
+  const loadUser = useStoreActions(actions => actions.users.getById);
 
   useEffect(()=>{
     getAllUsers();
@@ -76,7 +77,7 @@ export default function UserCrud({ id }) {
               <td>{user.name}</td>
               <td>{user.email}</td>
               <td>
-                <button className="btn btn-warnig" >
+                <button className="btn btn-warnig" onClick={e => loadUser(user.id)}>
                   <i className="fa fa-pencil"></i>
                 </button>
                 <button className="btn btn-danger ml-2" onClick={e => remove(user.id)}>

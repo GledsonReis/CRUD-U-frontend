@@ -34,9 +34,9 @@ const usersModel = {
     state.user = user;
   }),
   
-  // getById: action((state,id) =>{
-
-  // }),
+  getById: action((state, id) =>{
+    state.user = state.list.find(u => u.id === id);
+  }),
 
   clearUser: action(state => {
     const resetedUser = {
