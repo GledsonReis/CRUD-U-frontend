@@ -14,6 +14,7 @@ export default function UserCrud({ id }) {
   const user = useStoreState(state => state.users.user);
   const add = useStoreActions(actions => actions.users.createUser);
   const updateFields = useStoreActions(actions => actions.users.updadeValue);
+  const remove = useStoreActions(actions => actions.users.removeUser);
 
   useEffect(()=>{
     getAllUsers();
@@ -78,7 +79,7 @@ export default function UserCrud({ id }) {
                 <button className="btn btn-warnig" >
                   <i className="fa fa-pencil"></i>
                 </button>
-                <button className="btn btn-danger ml-2">
+                <button className="btn btn-danger ml-2" onClick={e => remove(user.id)}>
                   <i className="fa fa-trash"></i>
                 </button>
               </td>

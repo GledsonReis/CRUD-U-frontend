@@ -33,6 +33,7 @@ const usersModel = {
     user[event.target.name] = event.target.value;
     state.user = user;
   }),
+  
   // getById: action((state,id) =>{
 
   // }),
@@ -62,6 +63,13 @@ const usersModel = {
   // remove: action((state, id) => {
   //   state.foods = state.foods.filter(food => food.id !== id);
   // })
+
+  removeUser: thunk(async (actions, id) =>{
+    const res = await api.delete(`${id}`)
+    if(res.ok){
+      actions.getAllUsers();
+    }
+  }),
 }
 
 export default usersModel
