@@ -22,7 +22,7 @@ export default function UserCrud({ id }) {
 
   return (
     <Main { ...headerProps}>
-      <form className="form" onSubmit={e => add(e)}>
+      <form className="form" onSubmit={e => add(user)}>
         <div className="row">
           <div className="col-12 col-md-6">
             <div className="form-group">

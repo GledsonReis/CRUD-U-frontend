@@ -20,12 +20,12 @@ const usersModel = {
   setUsers: action((state, users) => {
     state.list = users;
   }),
-  
+
   createUser: thunk(async (actions, user) => {
     const res = await api.post('', user)
-    const foodsFromAPI = res.ok
-    console.log(foodsFromAPI)
-    actions.getAllUsers();
+    if(res.ok){
+      actions.getAllUsers();
+    }
   }),
 
   updadeValue: action((state, event) => {
@@ -49,6 +49,7 @@ const usersModel = {
     state.list = [...state.list, user];
   }),
   
+
   // toggle: action((state, id) => {
   //   state.foods.map(food => {
   //     if (food.id === id) {
