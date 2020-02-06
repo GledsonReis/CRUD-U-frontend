@@ -22,9 +22,12 @@ const usersModel = {
   }),
 
   createUser: thunk(async (actions, user) => {
-    const res = await api.post('', user)
+    const method = user.id ? 'PUT' : 'POST'
+    const url = user.id ? `/${user.id}` : ''
+    const res = (method === 'PUT') ?  await api.put(url, user) : await api.post(url, user)
     if(res.ok){
       actions.getAllUsers();
+      actions.clearUser();
     }
   }),
 
