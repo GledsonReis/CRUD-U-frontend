@@ -11,8 +11,9 @@ const headerProps = {
 export default function UserCrud({ id }) {
   const users = useStoreState(state => state.users.list);
   const getAllUsers = useStoreActions(actions => actions.users.getAllUsers);
-  // const user = useStoreState(state => state.users.user);
-  // const add = useStoreActions(actions => actions.users.add);
+  const user = useStoreState(state => state.users.user);
+  const add = useStoreActions(actions => actions.users.createUser);
+  const updateFields = useStoreActions(actions => actions.users.updadeValue);
 
   useEffect(()=>{
     getAllUsers();
@@ -21,15 +22,15 @@ export default function UserCrud({ id }) {
 
   return (
     <Main { ...headerProps}>
-      {/* <form className="form" onSubmit={onAddUser}>
+      <form className="form" onSubmit={e => add(e)}>
         <div className="row">
           <div className="col-12 col-md-6">
             <div className="form-group">
               <label htmlFor="">Nome</label>
               <input type="text" className="form-control" 
                 name="name" 
-                value={this.state.user.name}
-                onChange={e => this.updateFields(e)}
+                value={user.name}
+                onChange={e => updateFields(e)}
                 placeholder="Digite o nome..."/>
             </div>
           </div>
@@ -38,8 +39,8 @@ export default function UserCrud({ id }) {
               <label htmlFor="">Email</label>
               <input type="text" className="form-control"
               name="email"
-              value={this.state.user.email}
-              onChange={e => this.updateFields(e)}
+              value={user.email}
+              onChange={e => updateFields(e)}
               placeholder="Digite o email..."/>
             </div>
           </div>
@@ -56,7 +57,7 @@ export default function UserCrud({ id }) {
             </button>
           </div>
         </div>
-      </form> */}
+      </form>
       <p>Usuários cadastrados: {users.length}</p>
       <table className="table mt-4">
         <thead>

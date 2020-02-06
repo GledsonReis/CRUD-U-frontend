@@ -21,17 +21,33 @@ const usersModel = {
     state.list = users;
   }),
   
-  createUser: thunk(async actions => {
-    const res = await api.post('')
-    const foodsFromAPI = res.data
+  createUser: thunk(async (actions, user) => {
+    const res = await api.post('', user)
+    const foodsFromAPI = res.ok
     console.log(foodsFromAPI)
-    actions.setUsers(foodsFromAPI);
+    actions.getAllUsers();
   }),
 
-  // addUser: action((state, user) => {
-  //   user.id = uuid.v4();
-  //   state.foods = [...state.foods, food];
+  updadeValue: action((state, event) => {
+    const user = state.user;
+    user[event.target.name] = event.target.value;
+    state.user = user;
+  }),
+  // getById: action((state,id) =>{
+
   // }),
+
+  clearUser: action(state => {
+    const resetedUser = {
+      name: '',
+      email: '',
+    };
+    state.user = resetedUser;
+  }),
+
+  addUser: action((state, user) => {
+    state.list = [...state.list, user];
+  }),
   
   // toggle: action((state, id) => {
   //   state.foods.map(food => {
