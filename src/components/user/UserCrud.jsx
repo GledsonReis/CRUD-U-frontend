@@ -1,6 +1,8 @@
-import React, { Component } from 'react'
-import axios from 'axios'
+import React, { useEffect, useRef } from 'react';
 import Main from '../template/Main'
+import { useStoreActions, useStoreState } from 'easy-peasy'
+import { useForm } from 'react-hook-form'
+import composeRefs from '@seznam/compose-react-refs'
 
 const headerProps = {
   icon: 'users',
@@ -8,61 +10,46 @@ const headerProps = {
   subtitle: 'CRUD de usuários'
 }
 
-const baseUrl = "http://localhost:3001/users"
+export default function UserCrud({ id }) {
+  const users = useStoreState(state => state.users.list);
+  const user = useStoreState(state => state.users.user);
+  const getAllUsers = useStoreActions(actions => actions.users.getAllUsers);
+  const updateFields = useStoreActions(actions => actions.users.updadeValue);
+  const loadUser = useStoreActions(actions => actions.users.getById);
+  const add = useStoreActions(actions => actions.users.createUser);
+  const remove = useStoreActions(actions => actions.users.removeUser);
+  const clear = useStoreActions(actions => actions.users.clearUser);
 
-const initializeState = {
-  user: { name: '', email: ''},
-  list: []
-}
-export default class UserCrud extends Component {
-  state = { ...initializeState };
+  // validateform
+  const { register, handleSubmit, watch, errors } = useForm();
 
-  UNSAFE_componentWillMount(){
-    axios(baseUrl).then(resp => {
-      this.setState({ list: resp.data })
-    })
+  // focus
+  const mainRef = useRef(null);
+
+  useEffect(()=>{
+    getAllUsers();
+    // eslint-disable-next-line
+  }, []);
+
+  function handleClick(id){
+    loadUser(id);
+    mainRef.current.focus();
   }
 
-  clear() {
-    this.setState({ user: initializeState.user })
-  }
-
-  save(e) {
-    e.preventDefault();
-    const user = this.state.user
-    const method = user.id ? 'put' : 'post'
-    const url = user.id ? `${baseUrl}/${user.id}` : baseUrl
-    axios[method](url, user)
-      .then(resp => {
-        const list = this.getUpdatedList(resp.data, true)
-        this.setState({ user: initializeState.user, list })
-      })
-  }
-
-  getUpdatedList(user, add) {
-    const list = this.state.list.filter(u => u.id !== user.id)
-    if (add) list.unshift(user)
-    return list
-  }
-
-  updateFields(event) {
-    const user = { ...this.state.user}
-    user[event.target.name] = event.target.value
-    this.setState({ user })
-  }
-
-  renderForm() {
-    return(
-      <form className="form" onSubmit={e => this.save(e)}>
+  return (
+    <Main { ...headerProps}>
+      <form className="form" onSubmit={handleSubmit(e => add(user))}>
         <div className="row">
           <div className="col-12 col-md-6">
             <div className="form-group">
               <label htmlFor="">Nome</label>
               <input type="text" className="form-control" 
                 name="name" 
-                value={this.state.user.name}
-                onChange={e => this.updateFields(e)}
-                placeholder="Digite o nome..."/>
+                value={user.name}
+                onChange={e => updateFields(e)}
+                placeholder="Digite o nome..."
+                ref={composeRefs(mainRef, register({ required: true }))} />
+                {errors.name && <span className="text-danger">This field is required</span>}
             </div>
           </div>
           <div className="col-12 col-md-6">
@@ -70,9 +57,11 @@ export default class UserCrud extends Component {
               <label htmlFor="">Email</label>
               <input type="text" className="form-control"
               name="email"
-              value={this.state.user.email}
-              onChange={e => this.updateFields(e)}
-              placeholder="Digite o email..."/>
+              value={user.email}
+              onChange={e => updateFields(e)}
+              placeholder="Digite o email..."
+              ref={register({ required: true })}/>
+              {errors.email && <span className="text-danger">This field is required</span>}
             </div>
           </div>
         </div>
@@ -83,28 +72,13 @@ export default class UserCrud extends Component {
               Salvar
             </button>
 
-            <button className="btn btn-secondary ml-2" onClick={e => this.clear(e)}>
+            <button type="button" className="btn btn-secondary ml-2" onClick={e => clear(e)}>
               Cancelar
             </button>
           </div>
         </div>
       </form>
-    )
-  }
-
-  load(user){
-    this.setState({ user })
-  }
-
-  remove(user){
-    axios.delete(`${baseUrl}/${user.id}`).then(resp => {
-      const list = this.getUpdatedList(user, false);
-      this.setState({ list })
-    })
-  }
-
-  renderTable() {
-    return(
+      <p>Usuários cadastrados: {users.length}</p>
       <table className="table mt-4">
         <thead>
           <tr> 
@@ -115,39 +89,23 @@ export default class UserCrud extends Component {
           </tr>
         </thead>
         <tbody>
-          {this.renderRow()}
+          {users.map(user => (
+            <tr key={user.id}>
+              <td>{user.id}</td>
+              <td>{user.name}</td>
+              <td>{user.email}</td>
+              <td>
+                <button className="btn btn-warnig" onClick={e => handleClick(user.id)}>
+                  <i className="fa fa-pencil"></i>
+                </button>
+                <button className="btn btn-danger ml-2" onClick={e => remove(user.id)}>
+                  <i className="fa fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
-    )
-  }
-
-  renderRow() {
-    return this.state.list.map(user => {
-      return(
-        <tr key={user.id}>
-          <td>{user.id}</td>
-          <td>{user.name}</td>
-          <td>{user.email}</td>
-          <td>
-            <button className="btn btn-warnig" onClick={() => this.load(user)}>
-              <i className="fa fa-pencil"></i>
-            </button>
-            <button className="btn btn-danger ml-2" onClick={() => this.remove(user)}>
-              <i className="fa fa-trash"></i>
-            </button>
-          </td>
-        </tr>
-      )
-    })
-  }
-
-  render() {
-    return (
-      <Main { ...headerProps}>
-        {this.renderForm()}
-        <p>Usuários cadastrados: {this.state.list.length}</p>
-        {this.renderTable()}
-      </Main>
-    )
-  }
+    </Main>
+  )
 }
