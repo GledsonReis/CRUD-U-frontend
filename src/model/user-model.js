@@ -52,20 +52,6 @@ const usersModel = {
   addUser: action((state, user) => {
     state.list = [...state.list, user];
   }),
-  
-
-  // toggle: action((state, id) => {
-  //   state.foods.map(food => {
-  //     if (food.id === id) {
-  //       food.completed = !food.completed;
-  //     }
-  //     return food;
-  //   });
-  // }),
-
-  // remove: action((state, id) => {
-  //   state.foods = state.foods.filter(food => food.id !== id);
-  // })
 
   removeUser: thunk(async (actions, id) =>{
     const res = await api.delete(`${id}`)

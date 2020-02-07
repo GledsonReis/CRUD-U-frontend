@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Main from '../template/Main'
 import { useStoreActions, useStoreState } from 'easy-peasy'
+import { useForm } from 'react-hook-form'
+import composeRefs from '@seznam/compose-react-refs'
 
 const headerProps = {
   icon: 'users',
@@ -13,18 +15,30 @@ export default function UserCrud({ id }) {
   const user = useStoreState(state => state.users.user);
   const getAllUsers = useStoreActions(actions => actions.users.getAllUsers);
   const updateFields = useStoreActions(actions => actions.users.updadeValue);
+  const loadUser = useStoreActions(actions => actions.users.getById);
   const add = useStoreActions(actions => actions.users.createUser);
   const remove = useStoreActions(actions => actions.users.removeUser);
-  const loadUser = useStoreActions(actions => actions.users.getById);
+  const clear = useStoreActions(actions => actions.users.clearUser);
+
+  // validateform
+  const { register, handleSubmit, watch, errors } = useForm();
+
+  // focus
+  const mainRef = useRef(null);
 
   useEffect(()=>{
     getAllUsers();
     // eslint-disable-next-line
-  }, [])
+  }, []);
+
+  function handleClick(id){
+    loadUser(id);
+    mainRef.current.focus();
+  }
 
   return (
     <Main { ...headerProps}>
-      <form className="form" onSubmit={e => add(user)}>
+      <form className="form" onSubmit={handleSubmit(e => add(user))}>
         <div className="row">
           <div className="col-12 col-md-6">
             <div className="form-group">
@@ -33,7 +47,9 @@ export default function UserCrud({ id }) {
                 name="name" 
                 value={user.name}
                 onChange={e => updateFields(e)}
-                placeholder="Digite o nome..."/>
+                placeholder="Digite o nome..."
+                ref={composeRefs(mainRef, register({ required: true }))} />
+                {errors.name && <span className="text-danger">This field is required</span>}
             </div>
           </div>
           <div className="col-12 col-md-6">
@@ -43,7 +59,9 @@ export default function UserCrud({ id }) {
               name="email"
               value={user.email}
               onChange={e => updateFields(e)}
-              placeholder="Digite o email..."/>
+              placeholder="Digite o email..."
+              ref={register({ required: true })}/>
+              {errors.email && <span className="text-danger">This field is required</span>}
             </div>
           </div>
         </div>
@@ -54,7 +72,7 @@ export default function UserCrud({ id }) {
               Salvar
             </button>
 
-            <button className="btn btn-secondary ml-2" onClick={e => this.clear(e)}>
+            <button type="button" className="btn btn-secondary ml-2" onClick={e => clear(e)}>
               Cancelar
             </button>
           </div>
@@ -77,7 +95,7 @@ export default function UserCrud({ id }) {
               <td>{user.name}</td>
               <td>{user.email}</td>
               <td>
-                <button className="btn btn-warnig" onClick={e => loadUser(user.id)}>
+                <button className="btn btn-warnig" onClick={e => handleClick(user.id)}>
                   <i className="fa fa-pencil"></i>
                 </button>
                 <button className="btn btn-danger ml-2" onClick={e => remove(user.id)}>
