@@ -12,9 +12,8 @@ const usersModel = {
   
   getAllUsers: thunk(async actions => {
     const res = await api.get('')
-    const foodsFromAPI = res.data
-    console.log(foodsFromAPI)
-    actions.setUsers(foodsFromAPI);
+    const users = res.data
+    actions.setUsers(users);
   }),
 
   setUsers: action((state, users) => {

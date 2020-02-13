@@ -21,7 +21,7 @@ export default function UserCrud({ id }) {
   const clear = useStoreActions(actions => actions.users.clearUser);
 
   // validateform
-  const { register, handleSubmit, watch, errors } = useForm();
+  const { register, handleSubmit, errors } = useForm();
 
   // focus
   const mainRef = useRef(null);
